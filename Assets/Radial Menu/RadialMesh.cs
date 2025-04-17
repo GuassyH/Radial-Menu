@@ -34,30 +34,23 @@ public class RadialMesh : MonoBehaviour
         public Vector3 position;
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        CreateMesh();   
-    }
 
 
     public void CreateMesh(){
 
-        meshRenderer = this.AddComponent<MeshRenderer>(); 
-        meshFilter = this.AddComponent<MeshFilter>();
+        meshRenderer = this.AddComponent<MeshRenderer>();  
+        meshFilter = this.AddComponent<MeshFilter>();  
 
         mesh = new Mesh();
         mesh.name = this.name + " mesh";
 
         meshFilter.mesh = mesh;
 
-
         meshRenderer.sharedMaterial = new Material(material);
         meshRenderer.sharedMaterial.color = color;
 
         CalculateVertices();
         CalculateIndices();
-        
 
         mesh.vertices = positions;
         mesh.triangles = indices.ToArray();

@@ -33,9 +33,11 @@ public class RadialMenu : MonoBehaviour
 
     int resolution; 
 
+    public bool WheelOpen;
 
     private void Start() {
         CreateCanvas();
+        CloseWheel();
     }
 
     void Update()
@@ -78,9 +80,11 @@ public class RadialMenu : MonoBehaviour
     public void OpenWheel(int numOptions, List<string> infoTexts, List<UnityAction> actions){
         List<UnityAction> altActions = new List<UnityAction>(){ };
         CreateWheel(numOptions, infoTexts, actions, altActions);
+        WheelOpen = true;
     }
     public void OpenWheel(int numOptions, List<string> infoTexts, List<UnityAction> actions, List<UnityAction> altActions){
         CreateWheel(numOptions, infoTexts, actions, altActions);
+        WheelOpen = true;
     }
 
 
@@ -95,6 +99,8 @@ public class RadialMenu : MonoBehaviour
     void CreateMeshes(int numOptions){
 
         ClearMenu();
+
+        canvas.gameObject.SetActive(true);
 
         strideStep = 360f / numOptions;
         resolution = 100 / numOptions;
@@ -116,6 +122,7 @@ public class RadialMenu : MonoBehaviour
 
             radialButton.baseColor = baseColor;
             radialButton.highlightColor = highlightColor;
+            radialButton.radialMenu = this;
 
             radialMesh.angleStride = strideStep;
             radialMesh.angle = angles[i];
@@ -126,7 +133,10 @@ public class RadialMenu : MonoBehaviour
             radialMesh.color = baseColor;
 
             Buttons.Add(radialButton);
+            radialMesh.CreateMesh();
+
             meshes[i] = radialMesh;
+
         }
     }
 
@@ -135,6 +145,12 @@ public class RadialMenu : MonoBehaviour
     void AssignButtons(List<string> infoTexts, List<UnityAction> actions, List<UnityAction> altActions){
         for (int i = 0; i < Buttons.Count; i++)
         { 
+            Buttons[i].clickEvent = new Button.ButtonClickedEvent();
+            Buttons[i].altClickEvent = new Button.ButtonClickedEvent();
+
+            Buttons[i].clickEvent.AddListener( () => Debug.Log("Left Click on") );
+            Buttons[i].altClickEvent.AddListener( () => Debug.Log("Right Click on") );
+
             if(i < infoTexts.Count){    Buttons[i].ButtonInfo = infoTexts[i]; }
             else{   Buttons[i].ButtonInfo = Buttons[i].name;    }
         }
@@ -147,15 +163,26 @@ public class RadialMenu : MonoBehaviour
     void ClearMenu(){
         // if(meshes != null){ foreach (RadialMesh mesh in meshes){    EditorApplication.delayCall += () => { DestroyImmediate(mesh.gameObject); };    }   }
 
-        foreach (RadialMesh mesh in this.transform.GetComponentsInChildren<RadialMesh>()){
-            if(mesh != this.transform){
-                EditorApplication.delayCall += () => { DestroyImmediate(mesh.gameObject); };
+        foreach (RadialButton button in this.transform.GetComponentsInChildren<RadialButton>()){
+            if(button != this.transform){
+                EditorApplication.delayCall += () => { DestroyImmediate(button.gameObject); };
             }
         }
         
         Buttons.Clear();
         meshes = new RadialMesh[0];
     }
+
+
+
+    public void CloseWheel(){
+        // ClearMenu();
+        WheelOpen = false;
+        canvas.gameObject.SetActive(false);
+    }
+
+
+
 
     void CreateCanvas(){
         canvas.renderMode = RenderMode.WorldSpace;
