@@ -21,11 +21,13 @@ public class RadialMesh : MonoBehaviour
 
     private List<int> indices;
 
+
     MeshFilter meshFilter;
     Mesh mesh;
     MeshRenderer meshRenderer;
 
     [HideInInspector] public Material material;
+    [HideInInspector] public Color color;
 
 
     struct _vertex{
@@ -50,7 +52,8 @@ public class RadialMesh : MonoBehaviour
         meshFilter.mesh = mesh;
 
 
-        meshRenderer.sharedMaterial = material;
+        meshRenderer.sharedMaterial = new Material(material);
+        meshRenderer.sharedMaterial.color = color;
 
         CalculateVertices();
         CalculateIndices();
@@ -75,62 +78,59 @@ public class RadialMesh : MonoBehaviour
     }
 
 
+
     void CalculateVertices(){
 
         positions = new Vector3[resolution * 2];
         vertices = new _vertex[resolution * 2];
 
-        List<Vector3> top = new List<Vector3>(resolution);
-        List<Vector3> bottom = new List<Vector3>(resolution);
+        List<Vector3>  col_top = new List<Vector3>();
+        List<Vector3>  col_bottom = new List<Vector3>();
+        List<Vector3> col_points = new List<Vector3>();
 
         for (int i = 0; i < resolution; i++)
         {
             float newAngle = angle - (angleStride / 2f) + (angleStride * i / (resolution - 1f));
 
-            // Inner Vertex
-            vertices[i*2] = new _vertex();
-            vertices[i*2].position = new Vector3(Mathf.Cos(newAngle * Mathf.Deg2Rad), Mathf.Sin(newAngle * Mathf.Deg2Rad), 0) * radius;
+            // Top Vertex
+            vertices[i] = new _vertex();
+            vertices[i].position = new Vector3(Mathf.Cos(newAngle * Mathf.Deg2Rad), Mathf.Sin(newAngle * Mathf.Deg2Rad), 0) * radius;
             
-            // Outer Vertex
-            vertices[(i*2) + 1] = new _vertex();
-            vertices[(i*2) + 1].position = new Vector3(Mathf.Cos(newAngle * Mathf.Deg2Rad), Mathf.Sin(newAngle * Mathf.Deg2Rad), 0) * (radius - thickness);         
+            // Bottom Vertex
+            vertices[resolution + i] = new _vertex();
+            vertices[resolution + i].position = new Vector3(Mathf.Cos(newAngle * Mathf.Deg2Rad), Mathf.Sin(newAngle * Mathf.Deg2Rad), 0) * (radius - thickness);         
         }
 
 
         for (int i = 0; i < vertices.Length; i++){
-            if(i % 2 == 0){ top.Add(vertices[i].position);  }
-            else{   bottom.Add(vertices[i].position);   }
+            if(i < resolution){ col_top.Add(vertices[i].position);  }
+            else{   col_bottom.Add(vertices[i].position);   }
         }
 
-        top.Reverse();
+        col_top.Reverse();
 
-        List<Vector3> linePoses = new List<Vector3>();
-        for (int i = 0; i < top.Count; i++) {   linePoses.Add(top[i]);  }
-        for (int i = 0; i < bottom.Count; i++)  {   linePoses.Add(bottom[i]);   }
-        col_positions = linePoses.ToArray();
+        for (int i = 0; i < col_top.Count; i++) {   col_points.Add(col_top[i]);  }
+        for (int i = 0; i < col_bottom.Count; i++)  {   col_points.Add(col_bottom[i]);   }
 
-        bottom.Reverse();
+        col_positions = col_points.ToArray();
 
-        linePoses = new List<Vector3>();
-
-        for (int i = 0; i < top.Count; i++) {   linePoses.Add(top[i]);  }
-        for (int i = 0; i < bottom.Count; i++)  {   linePoses.Add(bottom[i]);   }
-        
-
+    
 
         for (int i = 0; i < vertices.Length; i++)
         {
-            positions[i] = linePoses[i];
+            positions[i] = vertices[i].position;
             
-            GameObject vert2 = new GameObject();
-            vert2.name = "Vert " + i;
-            vert2.transform.SetParent(this.transform);
-            vert2.transform.localPosition = positions[i];
+            GameObject vert_obj = new GameObject();
+            vert_obj.name = "Vert " + i;
+            vert_obj.transform.SetParent(this.transform);
+            vert_obj.transform.localPosition = positions[i];
         }
 
         mesh.vertices = positions;
 
     }
+
+
 
     void CalculateIndices(){
         indices = new List<int>();
@@ -139,12 +139,12 @@ public class RadialMesh : MonoBehaviour
         for (int i = 0; i < (resolution - 1); i++)
         {
             indices.Add(i);
-            indices.Add(i + 1);
             indices.Add(i + resolution);
+            indices.Add(i + 1);
             
             indices.Add(i + 1);
-            indices.Add(i + resolution + 1);
             indices.Add(i + resolution);
+            indices.Add(i + resolution + 1);
     
         }
     }

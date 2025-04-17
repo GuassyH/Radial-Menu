@@ -12,11 +12,16 @@ public class RadialButton : MonoBehaviour
     public Button.ButtonClickedEvent clickEvent;
     public Button.ButtonClickedEvent altClickEvent;
 
+    Material material;
+
+    public Color baseColor;
+    public Color highlightColor;
     
     // Start is called before the first frame update
     void Start()
     {
-
+        material = this.GetComponent<MeshRenderer>().material;
+        material.color = material.color;
     }
 
     // Update is called once per frame
@@ -24,11 +29,11 @@ public class RadialButton : MonoBehaviour
     {
         if(HoverOver){
             this.transform.localScale = Vector3.Lerp(this.transform.localScale, Vector3.one * 1.1f, 8 * Time.deltaTime);    
-            //sliceSprite.color = Color.Lerp(sliceSprite.color, hoverColor, 8 * Time.deltaTime);
+            material.color = Color.Lerp(material.color, highlightColor, 8 * Time.deltaTime);
         }
         else if (!HoverOver){
             this.transform.localScale = Vector3.Lerp(this.transform.localScale, Vector3.one, 8 * Time.deltaTime);    
-            //sliceSprite.color = Color.Lerp(sliceSprite.color, normalColor, 8 * Time.deltaTime);
+            material.color = Color.Lerp(material.color, baseColor, 8 * Time.deltaTime);
         }
     }
 }

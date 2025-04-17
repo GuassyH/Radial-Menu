@@ -9,7 +9,7 @@ public class RadialMenuEditor : Editor {
         base.OnInspectorGUI();
         RadialMenu radialMenu = (RadialMenu)target;
 
-        List<UnityAction> actions = new List<UnityAction>(){ };
+        List<UnityAction> actions = new List<UnityAction>(){ () => Debug.Log("Main Action for Button 1"),  () => Debug.Log("Main Action for Button 2") };
         List<string> info = new List<string>(){ "this is the first", "this is the second" };
 
         if(GUILayout.Button("Create Wheel")){
