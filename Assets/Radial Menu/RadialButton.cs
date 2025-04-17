@@ -16,17 +16,24 @@ public class RadialButton : MonoBehaviour
 
     public Color baseColor;
     public Color highlightColor;
+
+    RadialMesh thisMesh;
     
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        material = this.GetComponent<MeshRenderer>().material;
-        material.color = material.color;
+        // thisMesh = this.GetComponent<RadialMesh>();
+        // material = thisMesh.material;
+
+        this.transform.localScale = Vector3.zero;
     }
 
     // Update is called once per frame
     void Update()
     {
+        material = this.GetComponent<MeshRenderer>().material;
+        material.color = material.color;
+
         if(HoverOver){
             this.transform.localScale = Vector3.Lerp(this.transform.localScale, Vector3.one * 1.1f, 8 * Time.deltaTime);    
             material.color = Color.Lerp(material.color, highlightColor, 8 * Time.deltaTime);

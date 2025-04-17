@@ -22,8 +22,6 @@ public class RadialMenu : MonoBehaviour
     public Color baseColor;
     public Color highlightColor;
 
-
-
     float[] angles;
     float strideStep;
 
@@ -106,7 +104,6 @@ public class RadialMenu : MonoBehaviour
             angles[i] = (-strideStep * i) + 90f;
         }
 
-
         meshes = new RadialMesh[numOptions];
 
         for (int i = 0; i < numOptions; i++){
@@ -156,9 +153,8 @@ public class RadialMenu : MonoBehaviour
             }
         }
         
-
         Buttons.Clear();
-
+        meshes = new RadialMesh[0];
     }
 
     void CreateCanvas(){
